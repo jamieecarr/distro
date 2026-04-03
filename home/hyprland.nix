@@ -5,8 +5,7 @@
 # The desktop shell (bar, dock, launcher, notifications) is handled by
 # Noctalia — see noctalia.nix. This file only configures the compositor.
 #
-# Layout is set to floating (like macOS) — all windows are freely
-# movable and resizable by default. No tiling.
+# All windows float by default (like macOS) — no tiling.
 
 { config, pkgs, ... }:
 
@@ -17,31 +16,28 @@
     settings = {
       # ---------- General appearance ----------
       general = {
-        gaps_in = 5;       # Gap between windows (px)
-        gaps_out = 10;     # Gap between windows and screen edges (px)
+        gaps_in = 5;
+        gaps_out = 10;
         border_size = 2;
-        # Active window border — uses a gradient from blue to purple
         "col.active_border" = "rgba(7aa2f7ff) rgba(bb9af7ff) 45deg";
-        # Inactive window border — subtle gray
         "col.inactive_border" = "rgba(414868ff)";
       };
 
       # ---------- Decoration (rounded corners, blur, shadows) ----------
       decoration = {
-        rounding = 10;  # Corner radius on windows
+        rounding = 10;
 
         blur = {
           enabled = true;
-          size = 6;           # Blur kernel size
-          passes = 2;         # More passes = smoother blur, more GPU cost
+          size = 6;
+          passes = 2;
           new_optimizations = true;
         };
 
-        # Subtle drop shadow behind windows
         shadow = {
           enabled = true;
           range = 15;
-          render_power = 2;    # Falloff sharpness (1-4)
+          render_power = 2;
           color = "rgba(00000055)";
         };
       };
@@ -64,41 +60,28 @@
       # ---------- Input (keyboard, touchpad) ----------
       input = {
         touchpad = {
-          natural_scroll = true;   # Scroll direction like macOS
+          natural_scroll = true;
           tap-to-click = true;
         };
-
         repeat_rate = 30;
         repeat_delay = 300;
       };
 
-      # ---------- Gestures ----------
-      # Hyprland 0.51+ uses per-gesture definitions instead of the old
-      # gestures { workspace_swipe } block.
-      gesture = [
-        "3, left, workspace, +1"    # 3-finger swipe left = next workspace
-        "3, right, workspace, -1"   # 3-finger swipe right = previous workspace
-      ];
-
-      # ---------- Noctalia IPC variable ----------
-      "$ipc" = "qs -c noctalia-shell ipc call";
-
       # ---------- Keybinds ----------
       bind = [
-        # Core actions
-        "SUPER, Return, exec, kitty"              # Open terminal
-        "SUPER, Q, killactive"                      # Close focused window
-        "SUPER SHIFT, E, exit"                      # Exit Hyprland (logout)
-        "SUPER, F, fullscreen"                      # Toggle fullscreen
+        "SUPER, Return, exec, kitty"
+        "SUPER, Q, killactive"
+        "SUPER SHIFT, E, exit"
+        "SUPER, F, fullscreen"
 
-        # Noctalia shell controls
-        "SUPER, Space, exec, $ipc launcher toggle"          # App launcher
-        "SUPER, S, exec, $ipc controlCenter toggle"         # Control center sidebar
-        "SUPER, comma, exec, $ipc settings toggle"          # Settings panel
+        # Noctalia shell controls (IPC commands inlined to avoid $ escaping issues)
+        "SUPER, Space, exec, qs -c noctalia-shell ipc call launcher toggle"
+        "SUPER, S, exec, qs -c noctalia-shell ipc call controlCenter toggle"
+        "SUPER, comma, exec, qs -c noctalia-shell ipc call settings toggle"
 
         # Screenshots
-        ", Print, exec, grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png && wl-copy < ~/Pictures/Screenshots/$(ls -t ~/Pictures/Screenshots/ | head -1)"
-        "SUPER SHIFT, S, exec, grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png && wl-copy < ~/Pictures/Screenshots/$(ls -t ~/Pictures/Screenshots/ | head -1)"
+        ", Print, exec, grim ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"
+        "SUPER SHIFT, S, exec, grim -g \"$(slurp)\" ~/Pictures/Screenshots/$(date +'%Y-%m-%d_%H-%M-%S').png"
 
         # Move focus between windows
         "SUPER, H, movefocus, l"
@@ -131,29 +114,26 @@
 
       # ---------- Media keys ----------
       bindel = [
-        ", XF86AudioRaiseVolume, exec, $ipc volume increase"
-        ", XF86AudioLowerVolume, exec, $ipc volume decrease"
-        ", XF86MonBrightnessUp, exec, $ipc brightness increase"
-        ", XF86MonBrightnessDown, exec, $ipc brightness decrease"
+        ", XF86AudioRaiseVolume, exec, qs -c noctalia-shell ipc call volume increase"
+        ", XF86AudioLowerVolume, exec, qs -c noctalia-shell ipc call volume decrease"
+        ", XF86MonBrightnessUp, exec, qs -c noctalia-shell ipc call brightness increase"
+        ", XF86MonBrightnessDown, exec, qs -c noctalia-shell ipc call brightness decrease"
       ];
 
       bindl = [
-        ", XF86AudioMute, exec, $ipc volume muteOutput"
+        ", XF86AudioMute, exec, qs -c noctalia-shell ipc call volume muteOutput"
       ];
 
-      # Mouse binds — drag to move/resize windows (like macOS with SUPER held)
+      # Mouse binds — drag to move/resize windows
       bindm = [
-        "SUPER, mouse:272, movewindow"    # SUPER + left click drag = move
-        "SUPER, mouse:273, resizewindow"  # SUPER + right click drag = resize
+        "SUPER, mouse:272, movewindow"
+        "SUPER, mouse:273, resizewindow"
       ];
 
       # ---------- Window rules ----------
-      # windowrulev2 renamed to windowrule in Hyprland 0.51+
       windowrule = [
-        "float, class:^(pavucontrol)$"
-        "float, title:^(Picture-in-Picture)$"
-        # Make ALL windows float by default (macOS-style free-moving windows)
         "float, class:.*"
+        "float, title:^(Picture-in-Picture)$"
       ];
 
       # ---------- Autostart ----------
@@ -161,5 +141,14 @@
         "noctalia-shell"
       ];
     };
+
+    # ---------- Extra config ----------
+    # Gesture syntax that doesn't map cleanly to the settings attrset
+    # goes here as raw Hyprland config lines.
+    extraConfig = ''
+      # 3-finger swipe to switch workspaces
+      gesture = 3, left, workspace, +1
+      gesture = 3, right, workspace, -1
+    '';
   };
 }
