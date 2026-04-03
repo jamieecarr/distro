@@ -99,8 +99,7 @@
     nautilus          # File manager (GNOME Files)
     pavucontrol      # GUI audio mixer
     brightnessctl    # Screen brightness control from CLI
-    claude-code      # AI coding assistant
-    nodejs           # Required for claude-code
+    llm-agents.claude-code  # AI coding assistant (via llm-agents.nix, updated daily)
   ];
 
   # ---------- Nix settings ----------
