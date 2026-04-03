@@ -68,7 +68,7 @@ in
     inter                         # UI font — clean sans-serif
     nerd-fonts.jetbrains-mono     # Monospace font with icons (terminal, editor)
     noto-fonts                    # Fallback for broad Unicode coverage
-    noto-fonts-emoji              # Emoji support
+    noto-fonts-color-emoji        # Emoji support
   ];
 
   # ---------- Environment variables ----------
