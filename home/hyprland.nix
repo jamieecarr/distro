@@ -143,12 +143,8 @@
     };
 
     # ---------- Extra config ----------
-    # Gesture syntax that doesn't map cleanly to the settings attrset
-    # goes here as raw Hyprland config lines.
-    extraConfig = ''
-      # 3-finger swipe to switch workspaces
-      gesture = 3, left, workspace, +1
-      gesture = 3, right, workspace, -1
-    '';
+    # Gestures removed for now — the new gesture syntax from Hyprland 0.51+
+    # may not be available in the version bundled with nixpkgs-unstable yet.
+    # Add them back once your Hyprland version supports the gesture keyword.
   };
 }
